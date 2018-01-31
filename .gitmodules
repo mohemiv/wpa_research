@@ -1,0 +1,3 @@
+[submodule "wpa_research/pyrad"]
+	path = wpa_research/pyrad
+	url = git://github.com/mohemiv/pyrad.git
