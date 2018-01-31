@@ -1,4 +1,7 @@
 import hashlib;
+import hmac;
+
+from struct import pack;
 
 def nt_hash(str, binary=False):
     if binary == False:
