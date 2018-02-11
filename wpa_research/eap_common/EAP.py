@@ -78,7 +78,7 @@ class EAPPacket():
     def Parse(packet_raw):
         ret = {
             "packet_raw": packet_raw,
-            "parsed": None
+            "parsed": True
         };
         
         if len(packet_raw) < 4:
