@@ -38,3 +38,34 @@ def prf_peap_plus (secret, label, seed, length, peap_version = 0):
         res += prev;
 
     return res[:length];
+
+# For MS-CHAP and NTLMv1
+# Expand the key from a 7-byte value to a 8-byte value by setting parity bit to 0.
+# DES is 56-bit cypher, so DES.new will ignore the parity bit.
+# https://github.com/dlitz/pycrypto/blob/master/lib/Crypto/Cipher/DES.py#L71
+#
+# 11111111 11111111 11111111 11111111 11111111 11111111 11111111 =>
+# 11111110 11111110 11111110 11111110 11111110 11111110 11111110 11111110
+
+def expand_DES_key(key):
+    if len(key) != 7:
+        raise ValueError("key must be 7 bytes");
+
+    k1 = ord(key[0]);
+    k2 = ord(key[1]);
+    k3 = ord(key[2]);
+    k4 = ord(key[3]);
+    k5 = ord(key[4]);
+    k6 = ord(key[5]);
+    k7 = ord(key[6]);
+
+    ret  = chr( (k1 & 0b11111110) );
+    ret += chr( (k1 & 0b00000001) << 7 | (k2 & 0b11111100) >> 1);
+    ret += chr( (k2 & 0b00000011) << 6 | (k3 & 0b11111000) >> 2);
+    ret += chr( (k3 & 0b00000111) << 5 | (k4 & 0b11110000) >> 3);
+    ret += chr( (k4 & 0b00001111) << 4 | (k5 & 0b11100000) >> 4);
+    ret += chr( (k5 & 0b00011111) << 3 | (k6 & 0b11000000) >> 5);
+    ret += chr( (k6 & 0b00111111) << 2 | (k7 & 0b10000000) >> 6);
+    ret += chr( (k7 & 0b01111111) << 1);
+
+    return ret;
