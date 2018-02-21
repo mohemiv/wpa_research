@@ -37,14 +37,16 @@ def prf_peap_plus(secret, label, seed, length, peap_version=0):
 
     while len(res) < length:
         i += 1
-        prev = hmac.new(secret, prev + seed + prefix + pack('B', i) + postfix, hashlib.sha1).digest()
+        hmac_text = prev + seed + prefix + pack('B', i) + postfix
+        prev = hmac.new(secret, hmac_text, hashlib.sha1).digest()
         res += prev
 
     return res[:length]
 
 
 # For MS-CHAP and NTLMv1
-# Expand the key from a 7-byte value to a 8-byte value by setting parity bit to 0.
+# Expand the key from a 7-byte value to a 8-byte value by setting
+# parity bit to 0.
 # DES is 56-bit cypher, so DES.new will ignore the parity bit.
 # https://github.com/dlitz/pycrypto/blob/master/lib/Crypto/Cipher/DES.py#L71
 #
